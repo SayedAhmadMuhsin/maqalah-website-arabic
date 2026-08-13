@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মাকালাহ — আরবি রচনা প্রকাশ ও পাঠের প্ল্যাটফর্ম</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">مقالة | মাকালাহ</a>
+    <nav class="nav-links" id="auth-slot"></nav>
+  </div>
+</header>
+
+<main class="container">
+  <h1 class="page-title">রচনাসমূহ</h1>
+
+  <div class="tabs">
+    <button id="tab-top" class="active">সর্বোচ্চ রেটিং</button>
+    <button id="tab-new">নতুন প্রকাশিত</button>
+  </div>
+
+  <div id="feed">
+    <p class="muted">লোড হচ্ছে...</p>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

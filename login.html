@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>লগইন — মাকালাহ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">مقالة | মাকালাহ</a>
+    <nav class="nav-links" id="auth-slot"></nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="form-box">
+    <h2 id="form-title">লগইন করুন</h2>
+    <form id="auth-form">
+      <div class="field" id="name-field" style="display:none;">
+        <label>আপনার নাম</label>
+        <input type="text" id="name" placeholder="যেমনঃ মোহাম্মদ রহিম">
+      </div>
+      <div class="field">
+        <label>ইমেইল</label>
+        <input type="email" id="email" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>পাসওয়ার্ড</label>
+        <input type="password" id="password" required minlength="6" placeholder="কমপক্ষে ৬ ক্যারেক্টার">
+      </div>
+      <button type="submit" class="btn" style="width:100%;" id="submit-btn">লগইন</button>
+      <p class="form-msg" id="msg"></p>
+    </form>
+    <p class="switch-link">
+      <span id="switch-text">অ্যাকাউন্ট নেই?</span>
+      <button id="switch-btn">সাইনআপ করুন</button>
+    </p>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+let mode = "login"; // or "signup"
+const form = document.getElementById("auth-form");
+const msg = document.getElementById("msg");
+const nameField = document.getElementById("name-field");
+const formTitle = document.getElementById("form-title");
+const submitBtn = document.getElementById("submit-btn");
+const switchBtn = document.getElementById("switch-btn");
+const switchText = document.getElementById("switch-text");
+
+switchBtn.addEventListener("click", () => {
+  mode = mode === "login" ? "signup" : "login";
+  const isSignup = mode === "signup";
+  nameField.style.display = isSignup ? "block" : "none";
+  formTitle.textContent = isSignup ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "লগইন করুন";
+  submitBtn.textContent = isSignup ? "সাইনআপ" : "লগইন";
+  switchText.textContent = isSignup ? "আগে থেকেই অ্যাকাউন্ট আছে?" : "অ্যাকাউন্ট নেই?";
+  switchBtn.textContent = isSignup ? "লগইন করুন" : "সাইনআপ করুন";
+  msg.textContent = "";
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  msg.textContent = "";
+  msg.className = "form-msg";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const name = document.getElementById("name").value.trim();
+
+  submitBtn.disabled = true;
+  try {
+    if (mode === "signup") {
+      if (!name) {
+        msg.textContent = "অনুগ্রহ করে আপনার নাম দিন।";
+        msg.className = "form-msg error";
+        submitBtn.disabled = false;
+        return;
+      }
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection("users").doc(cred.user.uid).set({
+        name,
+        bio: "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+    }
+    location.href = "index.html";
+  } catch (err) {
+    msg.textContent = translateAuthError(err.code) || err.message;
+    msg.className = "form-msg error";
+  }
+  submitBtn.disabled = false;
+});
+
+function translateAuthError(code) {
+  const map = {
+    "auth/email-already-in-use": "এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট আছে।",
+    "auth/invalid-email": "সঠিক ইমেইল দিন।",
+    "auth/weak-password": "পাসওয়ার্ড কমপক্ষে ৬ ক্যারেক্টার হতে হবে।",
+    "auth/user-not-found": "এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি।",
+    "auth/wrong-password": "পাসওয়ার্ড ভুল হয়েছে।",
+    "auth/invalid-credential": "ইমেইল বা পাসওয়ার্ড ভুল।"
+  };
+  return map[code];
+}
+</script>
+</body>
+</html>

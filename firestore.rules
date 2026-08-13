@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ইউজার প্রোফাইল: যে কেউ পড়তে পারবে, শুধু নিজের প্রোফাইল এডিট করতে পারবে
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // রচনা: যে কেউ পড়তে পারবে, শুধু লগইনকৃত ব্যবহারকারী নতুন রচনা তৈরি করতে পারবে
+    // রেটিং আপডেটের জন্য যে কোনো লগইন ইউজারকে ratingSum/ratingCount/avgRating আপডেট করতে দেওয়া হয়েছে,
+    // কিন্তু title/content শুধু লেখক নিজেই বদলাতে পারবেন।
+    match /essays/{essayId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.authorId ||
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['ratingSum', 'ratingCount', 'avgRating', 'commentCount'])
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+
+      // প্রতিটা রচনার নিচে রেটিং
+      match /ratings/{userId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // প্রতিটা রচনার নিচে মন্তব্য
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+      }
+    }
+  }
+}
