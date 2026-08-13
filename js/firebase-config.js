@@ -1,18 +1,10 @@
-// ==============================================
-// এখানে তোমার নিজের Firebase প্রজেক্টের কনফিগ বসাও
-// Firebase Console (console.firebase.google.com) থেকে
-// Project Settings > General > Your apps > SDK setup and configuration
-// থেকে এই মানগুলো কপি করে নিচে পেস্ট করো।
-// README.md ফাইলে ধাপে ধাপে নির্দেশনা দেওয়া আছে।
-// ==============================================
-
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY_HERE",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyBFvIOUoVumsrY5Ew_N7xqXMHbBYOYfOQw",
+  authDomain: "maqalah-app.firebaseapp.com",
+  projectId: "maqalah-app",
+  storageBucket: "maqalah-app.firebasestorage.app",
+  messagingSenderId: "275244315355",
+  appId: "1:275244315355:web:0eef88ac7695acafefd2fe"
 };
 
 firebase.initializeApp(firebaseConfig);
